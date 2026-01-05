@@ -8,11 +8,7 @@ class EditTodoScreen extends StatefulWidget {
   final Todo todo;
   final int index;
 
-  const EditTodoScreen({
-    super.key,
-    required this.todo,
-    required this.index,
-  });
+  const EditTodoScreen({super.key, required this.todo, required this.index});
 
   @override
   State<EditTodoScreen> createState() => _EditTodoScreenState();
@@ -31,8 +27,9 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
   void initState() {
     super.initState();
     titleController = TextEditingController(text: widget.todo.title);
-    descriptionController =
-        TextEditingController(text: widget.todo.description);
+    descriptionController = TextEditingController(
+      text: widget.todo.description,
+    );
     selectedPriority = widget.todo.priority;
     selectedDate = widget.todo.dueDate;
   }
@@ -78,10 +75,7 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
       elevation: 0,
       backgroundColor: Colors.transparent,
       centerTitle: true,
-      title: const Text(
-        "Edit Task",
-        style: TextStyle(color: Colors.black),
-      ),
+      title: const Text("Edit Task", style: TextStyle(color: Colors.black)),
       leadingWidth: 80,
       leading: TextButton(
         onPressed: () => Get.back(),
@@ -96,10 +90,7 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
     return _inputContainer(
       TextField(
         controller: titleController,
-        style: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         decoration: const InputDecoration(
           hintText: "Task title",
           border: InputBorder.none,
@@ -207,6 +198,7 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
         onPressed: _updateTodo,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),

@@ -18,6 +18,20 @@ class TodoListScreen extends GetView<TodoController> {
     return "Good Evening";
   }
 
+  IconData getTimeIcon() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return Icons.wb_sunny_outlined;
+    if (hour < 17) return Icons.wb_cloudy_outlined;
+    return Icons.nightlight_round;
+  }
+
+  Color getAvatarColor() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return Colors.orange;
+    if (hour < 17) return Colors.blue;
+    return Colors.indigo;
+  }
+
   String getFormattedDate() {
     final now = DateTime.now();
     return "${_weekday(now.weekday)}, ${now.day} ${_month(now.month)}";
@@ -31,7 +45,7 @@ class TodoListScreen extends GetView<TodoController> {
       "THURSDAY",
       "FRIDAY",
       "SATURDAY",
-      "SUNDAY"
+      "SUNDAY",
     ];
     return days[day - 1];
   }
@@ -49,7 +63,7 @@ class TodoListScreen extends GetView<TodoController> {
       "SEP",
       "OCT",
       "NOV",
-      "DEC"
+      "DEC",
     ];
     return months[month - 1];
   }
@@ -62,17 +76,15 @@ class TodoListScreen extends GetView<TodoController> {
       backgroundColor: const Color(0xFFF6F7FB),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,
-        onPressed: () {
-          Get.to(() => const AddTodoScreen());
-        },
+        foregroundColor: Colors.white,
+        onPressed: () => Get.to(() => const AddTodoScreen()),
         child: const Icon(Icons.add),
       ),
-      // bottomNavigationBar: _bottomNav(),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Obx(
-                () => ListView(
+            () => ListView(
               children: [
                 _header(),
                 const SizedBox(height: 20),
@@ -83,45 +95,28 @@ class TodoListScreen extends GetView<TodoController> {
                   "${controller.totalTasks - controller.completedTasks} LEFT",
                 ),
                 const SizedBox(height: 12),
-
-                // 🔥 SWIPE EDIT + DELETE (UI PRESERVED)
                 ...controller.todos.asMap().entries.map((entry) {
                   final index = entry.key;
                   final todo = entry.value;
 
                   return Dismissible(
                     key: ValueKey('${todo.title}-$index'),
-
                     direction: DismissDirection.horizontal,
-
                     confirmDismiss: (direction) async {
                       if (direction == DismissDirection.startToEnd) {
-                        // 👉 EDIT
-                        Get.to(() => EditTodoScreen(
-                          todo: todo,
-                          index: index,
-                        ));
+                        Get.to(() => EditTodoScreen(todo: todo, index: index));
                         return false;
                       } else {
-                        // 👈 DELETE
                         return await _confirmDelete();
                       }
                     },
-
-                    onDismissed: (_) {
-                      controller.deleteTodo(index);
-                    },
-
+                    onDismissed: (_) => controller.deleteTodo(index),
                     background: _editBackground(),
                     secondaryBackground: _deleteBackground(),
-
                     child: GestureDetector(
-                      onTap: () {
-                        Get.to(() => EditTodoScreen(
-                          todo: todo,
-                          index: index,
-                        ));
-                      },
+                      onTap: () => Get.to(
+                        () => EditTodoScreen(todo: todo, index: index),
+                      ),
                       child: _taskTile(todo),
                     ),
                   );
@@ -142,10 +137,22 @@ class TodoListScreen extends GetView<TodoController> {
       children: [
         Row(
           children: [
-            const CircleAvatar(
-              radius: 22,
-              backgroundColor: Colors.orange,
-              child: Icon(Icons.person, color: Colors.white),
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: getAvatarColor().withOpacity(0.4),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: CircleAvatar(
+                radius: 22,
+                backgroundColor: getAvatarColor(),
+                child: Icon(getTimeIcon(), color: Colors.white),
+              ),
             ),
             const SizedBox(width: 12),
             Column(
@@ -153,14 +160,11 @@ class TodoListScreen extends GetView<TodoController> {
               children: [
                 Text(
                   getFormattedDate(),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "${getGreeting()},\nAlex",
+                  getGreeting(),
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -170,8 +174,8 @@ class TodoListScreen extends GetView<TodoController> {
             ),
           ],
         ),
-        Row(
-          children: const [
+        const Row(
+          children: [
             Icon(Icons.notifications_none),
             SizedBox(width: 16),
             Icon(Icons.grid_view),
@@ -191,14 +195,18 @@ class TodoListScreen extends GetView<TodoController> {
         gradient: const LinearGradient(
           colors: [Color(0xFF1E88E5), Color(0xFF42A5F5)],
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.35),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Daily Goal",
-            style: TextStyle(color: Colors.white70),
-          ),
+          const Text("Daily Goal", style: TextStyle(color: Colors.white70)),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -237,10 +245,7 @@ class TodoListScreen extends GetView<TodoController> {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -250,17 +255,14 @@ class TodoListScreen extends GetView<TodoController> {
           ),
           child: Text(
             badge,
-            style: const TextStyle(
-              color: Colors.red,
-              fontSize: 12,
-            ),
+            style: const TextStyle(color: Colors.red, fontSize: 12),
           ),
         ),
       ],
     );
   }
 
-  // ================= TASK TILE (UNCHANGED) =================
+  // ================= TASK TILE =================
 
   Widget _taskTile(Todo todo) {
     Color priorityColor;
@@ -287,6 +289,13 @@ class TodoListScreen extends GetView<TodoController> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -303,18 +312,14 @@ class TodoListScreen extends GetView<TodoController> {
                   todo.title,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    decoration:
-                    todo.isDone ? TextDecoration.lineThrough : null,
+                    decoration: todo.isDone ? TextDecoration.lineThrough : null,
                   ),
                 ),
                 if (todo.description.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
                     todo.description,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey,
-                    ),
+                    style: const TextStyle(fontSize: 13, color: Colors.grey),
                   ),
                 ],
                 const SizedBox(height: 8),
@@ -322,17 +327,16 @@ class TodoListScreen extends GetView<TodoController> {
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: priorityColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         priorityLabel,
-                        style: TextStyle(
-                          color: priorityColor,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: priorityColor, fontSize: 12),
                       ),
                     ),
                     if (todo.dueDate != null) ...[
@@ -377,51 +381,24 @@ class TodoListScreen extends GetView<TodoController> {
 
   Future<bool> _confirmDelete() async {
     return await Get.dialog<bool>(
-      AlertDialog(
-        title: const Text("Delete Task"),
-        content: const Text("Are you sure you want to delete this task?"),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(result: false),
-            child: const Text("Cancel"),
+          AlertDialog(
+            title: const Text("Delete Task"),
+            content: const Text("Are you sure you want to delete this task?"),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(result: false),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () => Get.back(result: true),
+                child: const Text(
+                  "Delete",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Get.back(result: true),
-            child: const Text(
-              "Delete",
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
-      ),
-    ) ??
+        ) ??
         false;
-  }
-
-  // ================= BOTTOM NAV =================
-
-  Widget _bottomNav() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: Colors.blue,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.check_box),
-          label: "Tasks",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.calendar_month),
-          label: "Calendar",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.folder),
-          label: "Projects",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: "Settings",
-        ),
-      ],
-    );
   }
 }

@@ -61,25 +61,16 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
       elevation: 0,
       backgroundColor: Colors.transparent,
       centerTitle: true,
-      title: const Text(
-        "New Task",
-        style: TextStyle(color: Colors.black),
-      ),
+      title: const Text("New Task", style: TextStyle(color: Colors.black)),
       leadingWidth: 80,
       leading: TextButton(
         onPressed: () => Get.back(),
-        child: const Text(
-          "Cancel",
-          style: TextStyle(fontSize: 16),
-        ),
+        child: const Text("Cancel", style: TextStyle(fontSize: 16)),
       ),
       actions: [
         TextButton(
           onPressed: _createTodo,
-          child: const Text(
-            "Done",
-            style: TextStyle(fontSize: 16),
-          ),
+          child: const Text("Done", style: TextStyle(fontSize: 16)),
         ),
       ],
     );
@@ -96,10 +87,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
       ),
       child: TextField(
         controller: titleController,
-        style: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         decoration: const InputDecoration(
           hintText: "What needs to be done?",
           border: InputBorder.none,
@@ -215,6 +203,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
         onPressed: _createTodo,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
